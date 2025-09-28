@@ -9,5 +9,5 @@ const checkPalindrom = (string) => {
   return normalString === reverseString;
 };
 
-console.log(compareLengthString('олень', 5));
-console.log(checkPalindrom('топот', 'топот'));
+compareLengthString('олень', 5);
+checkPalindrom('топот', 'топот');
