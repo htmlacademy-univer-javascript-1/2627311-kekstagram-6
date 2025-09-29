@@ -20,21 +20,21 @@ const photoDescriptions = [
     'Анатолий',
     'Михаил',
     'Виктория'
-  ];
+  ],
+  PHOTO_COUNT = 25,
+  photos = [];
 
-function getRandomIntInRange(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+const getRandomIntInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-function createIdGenerator() {
+const createIdGenerator = () => {
   let currentId = 1;
   return function () {
     return currentId++;
   };
-}
+};
 const generateCommentId = createIdGenerator();
 
-function generateCommentMessage() {
+const generateCommentMessage = () => {
   const count = getRandomIntInRange(1, 2);
   let message = '';
   for (let i = 0; i < count; i++) {
@@ -47,9 +47,9 @@ function generateCommentMessage() {
     }
   }
   return message;
-}
+};
 
-function generateComments(){
+const generateComments = () => {
   const count = getRandomIntInRange(0, 30),
     comments = [];
   for (let i = 0; i < count; i++) {
@@ -61,12 +61,10 @@ function generateComments(){
     });
   }
   return comments;
-}
+};
 
-function generateArrayPhotos(){
-  const photos = [];
-
-  for (let i = 1; i <= 25; i++){
+const generateArrayPhotos = () => {
+  for (let i = 1; i <= PHOTO_COUNT; i++){
     photos.push({
       id: i,
       url: `photos/${i}.jpg`,
@@ -77,6 +75,6 @@ function generateArrayPhotos(){
   }
 
   return photos;
-}
+};
 
 generateArrayPhotos();
