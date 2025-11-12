@@ -4,6 +4,7 @@ const commentCount = document.querySelector('.social__comment-count');
 const commentsLoader = document.querySelector('.comments-loader');
 const closeButton = document.querySelector('.big-picture__cancel');
 let currentShow = 0;
+let onCommentsLoad = null;
 
 const renderComment = (comment) => {
   const {avatar, name, message} = comment;
@@ -28,6 +29,7 @@ const renderComment = (comment) => {
 
 const renderListComments = (comments) => {
   const length = currentShow;
+
   for (let i = length; i < length + 5; i++){
     if (comments[i]){
       commentsContainer.append(renderComment(comments[i]));
@@ -42,13 +44,23 @@ const renderListComments = (comments) => {
   commentCount.firstChild.textContent = `${currentShow} из `;
 };
 
-const showBigPicture = (arr) => {
-  const closeBigPictureKeydown = (event) => {
-    if (event.key === 'Escape'){
-      closeBigPicture();
-    }
-  };
+const closeBigPictureKeydown = (event) => {
+  if (event.key === 'Escape'){
+    closeBigPicture();
+  }
+};
 
+function closeBigPicture() {
+  bigPicture.classList.add('hidden');
+  commentCount.classList.remove('hidden');
+  commentsLoader.classList.remove('hidden');
+  document.body.classList.remove('modal-open');
+  document.removeEventListener('keydown', closeBigPictureKeydown);
+  commentsLoader.removeEventListener('click', onCommentsLoad);
+  currentShow = 0;
+}
+
+const showBigPicture = (arr) => {
   const {url, description, likes, comments} = arr;
 
   bigPicture.classList.remove('hidden');
@@ -66,24 +78,12 @@ const showBigPicture = (arr) => {
 
   commentCount.firstChild.textContent = `${currentShow} из `;
 
-  document.addEventListener('keydown', closeBigPictureKeydown);
-
-  const onCommentsLoad = () => {
+  onCommentsLoad = () => {
     renderListComments(comments);
   };
-
   commentsLoader.addEventListener('click', onCommentsLoad);
 
-  function closeBigPicture() {
-    bigPicture.classList.add('hidden');
-    commentCount.classList.remove('hidden');
-    commentsLoader.classList.remove('hidden');
-    document.body.classList.remove('modal-open');
-    document.removeEventListener('keydown', closeBigPictureKeydown);
-    commentsLoader.removeEventListener('click', onCommentsLoad);
-    currentShow = 0;
-  }
-
+  document.addEventListener('keydown', closeBigPictureKeydown);
   closeButton.addEventListener('click', closeBigPicture);
 };
 
