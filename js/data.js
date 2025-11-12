@@ -37,7 +37,7 @@ const generateCommentMessage = () => {
     if (i === 0) {
       message += sentence;
     } else {
-      message += `' ' + ${sentence}`;
+      message += ` ${sentence}`;
     }
   }
   return message;
