@@ -7,4 +7,6 @@ const createIdGenerator = () => {
   };
 };
 
-export {getRandomIntInRange, createIdGenerator};
+const isEscape = (event) => event.key === 'Escape';
+
+export {getRandomIntInRange, createIdGenerator, isEscape};
