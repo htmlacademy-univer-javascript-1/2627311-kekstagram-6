@@ -1,8 +1,11 @@
+import {isEscape} from './util.js';
+
 const bigPicture = document.querySelector('.big-picture');
-const commentsContainer = document.querySelector('.social__comments');
-const commentCount = document.querySelector('.social__comment-count');
-const commentsLoader = document.querySelector('.comments-loader');
-const closeButton = document.querySelector('.big-picture__cancel');
+const commentsContainer = bigPicture.querySelector('.social__comments');
+const commentCount = bigPicture.querySelector('.social__comment-count');
+const commentsLoader = bigPicture.querySelector('.comments-loader');
+const closeButton = bigPicture.querySelector('.big-picture__cancel');
+const COMMENTS_STEP = 5;
 let currentShow = 0;
 let onCommentsLoad = null;
 
@@ -30,7 +33,7 @@ const renderComment = (comment) => {
 const renderListComments = (comments) => {
   const length = currentShow;
 
-  for (let i = length; i < length + 5; i++){
+  for (let i = length; i < length + COMMENTS_STEP; i++){
     if (comments[i]){
       commentsContainer.append(renderComment(comments[i]));
       currentShow++;
@@ -45,7 +48,7 @@ const renderListComments = (comments) => {
 };
 
 const closeBigPictureKeydown = (event) => {
-  if (event.key === 'Escape'){
+  if (isEscape(event)){
     closeBigPicture();
   }
 };
@@ -57,6 +60,7 @@ function closeBigPicture() {
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', closeBigPictureKeydown);
   commentsLoader.removeEventListener('click', onCommentsLoad);
+  closeButton.removeEventListener('click', closeBigPicture);
   currentShow = 0;
 }
 
