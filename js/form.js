@@ -1,9 +1,11 @@
 import {isEscape} from './util.js';
+import { uploadData } from './fetch.js';
 
 const form = document.querySelector('.img-upload__form');
 const formEdit = form.querySelector('.img-upload__overlay');
 const uploadInput = form.querySelector('.img-upload__input');
 const closeButton = form.querySelector('.img-upload__cancel');
+const btnFormSubmit = form.querySelector('.img-upload__submit');
 
 const closeFormEdit = (event) => {
   if (isEscape(event)){
@@ -20,7 +22,10 @@ const openEditor = () => {
   closeButton.addEventListener('click', closeEditor);
   document.addEventListener('keydown', closeFormEdit);
 
+  resetScale();
   addFilter();
+
+  btnFormSubmit.disabled = false;
 };
 
 function closeEditor (){
@@ -38,10 +43,9 @@ function closeEditor (){
 
 uploadInput.addEventListener('change', openEditor);
 
-
 const inputHashtags = form.querySelector('.text__hashtags');
 const inputDescription = form.querySelector('.text__description');
-const btnFormSubmit = form.querySelector('.img-upload__submit');
+
 
 //валидация хэш-тегов
 
@@ -142,12 +146,54 @@ inputDescription.addEventListener('keydown', (evt) => {
   }
 });
 
+const showMessage = (message) => {
+  const messageTemplate = document.querySelector(`#${message}`);
+  const sectionMessage = messageTemplate.content.querySelector(`.${message}`).cloneNode(true);
+
+  document.body.insertAdjacentElement('beforeend', sectionMessage);
+  const closeMessageButton = document.querySelector(`.${message}__button`);
+
+  const closeMessage = () => {
+    sectionMessage.remove();
+    closeMessageButton.removeEventListener('click', closeMessage);
+    document.removeEventListener('keydown', escapeMessage);
+    document.removeEventListener('click', closeMessageByClick);
+  };
+
+  function escapeMessage (event)  {
+    if (isEscape(event)){
+      closeMessage();
+    }
+  }
+
+  function closeMessageByClick(e){
+    if (e.target && e.target.classList.contains(message)){
+      closeMessage();
+    }
+  }
+
+  closeMessageButton.addEventListener('click', closeMessage);
+  document.addEventListener('keydown', escapeMessage);
+  document.addEventListener('click', closeMessageByClick);
+};
+
 form.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
-  if (pristine.validate()){
-    form.submit();
+  if (!pristine.validate()){
+    return true;
   }
+
+  const formData = new FormData(evt.target);
+  btnFormSubmit.disabled = true;
+
+  uploadData(() => {
+    closeEditor();
+    showMessage('success');
+  }, () => {
+    closeEditor();
+    showMessage('error');
+  }, 'POST', formData);
 });
 
 //эффект масштаб
@@ -171,6 +217,11 @@ const changeScale = (value) => {
     img.style.transform = `scale(${currentScale / 100})`;
   }
 };
+
+function resetScale(){
+  currentScale = 100;
+  img.style.transform = 'scale(1)';
+}
 
 btnScaleSmaller.addEventListener('click', () => changeScale(-STEP_SCALE));
 btnScaleBigger.addEventListener('click', () => changeScale(STEP_SCALE));
