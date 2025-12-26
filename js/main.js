@@ -1,9 +1,15 @@
 import { loadData } from './fetch.js';
 import {renderPictures} from './render-pictures.js';
+import { initSort } from './filter.js';
 import './form.js';
 
+let photos = [];
+
 const onSuccess = (data) => {
-  renderPictures(data);
+  photos = data.slice();
+  renderPictures(data.slice());
+  document.querySelector('.img-filters').classList.remove('img-filters--inactive');
+  initSort(photos);
 };
 
 const onError = () => {
