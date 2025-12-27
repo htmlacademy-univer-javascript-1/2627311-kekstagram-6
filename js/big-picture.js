@@ -1,11 +1,13 @@
 import {isEscape} from './util.js';
 
+const COMMENTS_STEP = 5;
+
 const bigPicture = document.querySelector('.big-picture');
 const commentsContainer = bigPicture.querySelector('.social__comments');
 const commentCount = bigPicture.querySelector('.social__comment-count');
 const commentsLoader = bigPicture.querySelector('.comments-loader');
 const closeButton = bigPicture.querySelector('.big-picture__cancel');
-const COMMENTS_STEP = 5;
+
 let currentShow = 0;
 let onCommentsLoad = null;
 

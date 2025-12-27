@@ -16,7 +16,7 @@ const initSort = (photos) => {
 
   const isButton = (evt) => evt.target.tagName === 'BUTTON';
 
-  const onImgFiltersFromClick = debounce((evt) => {
+  const onImgFiltersFormClick = debounce((evt) => {
     if (isButton(evt)){
       removePictures();
 
@@ -36,7 +36,7 @@ const initSort = (photos) => {
     }
   };
 
-  imgFiltersForm.addEventListener('click', onImgFiltersFromClick);
+  imgFiltersForm.addEventListener('click', onImgFiltersFormClick);
   imgFiltersForm.addEventListener('click', onButtonClick);
 };
 
