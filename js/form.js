@@ -1,11 +1,18 @@
 import {isEscape} from './util.js';
 import { uploadData } from './fetch.js';
+import {addFilter, deleteFilter, resetScale} from './effects.js';
+import './user-image.js';
+
+const MAX_SYMBOLS = 20;
+const MAX_HASHTAGS = 5;
 
 const form = document.querySelector('.img-upload__form');
 const formEdit = form.querySelector('.img-upload__overlay');
 const uploadInput = form.querySelector('.img-upload__input');
 const closeButton = form.querySelector('.img-upload__cancel');
 const btnFormSubmit = form.querySelector('.img-upload__submit');
+const inputHashtags = form.querySelector('.text__hashtags');
+const inputDescription = form.querySelector('.text__description');
 
 const closeFormEdit = (event) => {
   if (isEscape(event)){
@@ -43,15 +50,8 @@ function closeEditor (){
 
 uploadInput.addEventListener('change', openEditor);
 
-const inputHashtags = form.querySelector('.text__hashtags');
-const inputDescription = form.querySelector('.text__description');
-
-
-//валидация хэш-тегов
 
 let errorMessage = '';
-const MAX_SYMBOLS = 20;
-const MAX_HASHTAGS = 5;
 
 const error = () => errorMessage;
 
@@ -64,11 +64,7 @@ const pristine = new Pristine(form, {
 });
 
 const onHashtagInput = () => {
-  if (pristine.validate()){
-    btnFormSubmit.disabled = false;
-  } else {
-    btnFormSubmit.disabled = true;
-  }
+  btnFormSubmit.disabled = !pristine.validate();
 };
 
 const hashtagsHandler = (value) => {
@@ -114,6 +110,7 @@ const hashtagsHandler = (value) => {
     if (isInvalid){
       errorMessage = rule.error;
     }
+
     return !isInvalid;
   });
 };
@@ -128,7 +125,6 @@ inputHashtags.addEventListener('keydown', (evt) => {
   }
 });
 
-//валидация Комментарий
 
 const validateDescription = (value) =>  value.length <= 140;
 
@@ -195,116 +191,3 @@ form.addEventListener('submit', (evt) => {
     showMessage('error');
   }, 'POST', formData);
 });
-
-//эффект масштаб
-
-const btnScaleSmaller = document.querySelector('.scale__control--smaller');
-const btnScaleBigger = document.querySelector('.scale__control--bigger');
-const scaleValue = document.querySelector('.scale__control--value');
-const img = document.querySelector('.img-upload__preview').children[0];
-const MIN_SCALE = 25;
-const MAX_SCALE = 100;
-const STEP_SCALE = 25;
-
-let currentScale = 100;
-
-const changeScale = (value) => {
-  if (currentScale + value < MIN_SCALE || currentScale + value > MAX_SCALE){
-    return true;
-  } else {
-    currentScale += value;
-    scaleValue.value = `${currentScale}%`;
-    img.style.transform = `scale(${currentScale / 100})`;
-  }
-};
-
-function resetScale(){
-  currentScale = 100;
-  img.style.transform = 'scale(1)';
-}
-
-btnScaleSmaller.addEventListener('click', () => changeScale(-STEP_SCALE));
-btnScaleBigger.addEventListener('click', () => changeScale(STEP_SCALE));
-
-// Наложение эффекта
-
-const effectsList = document.querySelector('.effects__list');
-const sliderEffectLevel = document.querySelector('.effect-level__slider');
-const effectValue = document.querySelector('.effect-level__value');
-const slider = document.querySelector('.img-upload__effect-level');
-
-
-const effects = {
-  none: {
-    options: { range: { min: 0, max: 1 }, start: 1, step: 0.1, connect: 'lower'},
-    getValue: () => ''
-  },
-  chrome: {
-    options: {range: {min: 0, max: 1}, start: 1, step: 0.1},
-    getValue: (value) => `grayscale(${value})`
-  },
-  sepia: {
-    options: {range: {min: 0, max: 1}, start: 1, step: 0.1},
-    getValue: (value) => `sepia(${value})`
-  },
-  marvin: {
-    options: {range: {min: 0, max: 100}, start: 100, step: 1},
-    getValue: (value) => `invert(${value}%)`
-  },
-  phobos: {
-    options: {range: {min: 0, max: 3}, start: 3, step: 0.1},
-    getValue: (value) => `blur(${value}px)`
-  },
-  heat: {
-    options: {range: {min: 1, max: 3}, start: 3, step: 0.1},
-    getValue: (value) => `brightness(${value})`
-  }
-};
-
-const filterChangeHandler = (event) => {
-  const currentEffect = event.target.value;
-
-  const effect = effects[currentEffect];
-
-  sliderEffectLevel.noUiSlider.updateOptions(effect.options);
-  sliderEffectLevel.noUiSlider.set(effect.options.start);
-
-  if (currentEffect === 'none'){
-    img.style.filter = '';
-    slider.classList.add('hidden');
-    effectValue.value = '';
-
-    return true;
-  }
-
-  slider.classList.remove('hidden');
-
-  effectValue.value = effect.options.start;
-};
-
-function addFilter  ()  {
-  img.style.filter = '';
-  noUiSlider.create(sliderEffectLevel, effects.none.options);
-  effectValue.value = '';
-  slider.classList.add('hidden');
-
-  sliderEffectLevel.noUiSlider.on('update', () => {
-    const currentEffect = document.querySelector('.effects__radio:checked').value;
-
-    if (currentEffect === 'none') {return true;}
-
-    const value = sliderEffectLevel.noUiSlider.get();
-    effectValue.value = parseFloat(value);
-
-    const effect = effects[currentEffect];
-    img.style.filter = effect.getValue(value);
-  });
-
-  effectsList.addEventListener('change', filterChangeHandler);
-}
-
-function deleteFilter(){
-  effectsList.removeEventListener('change', filterChangeHandler);
-  sliderEffectLevel.noUiSlider.destroy();
-}
-
