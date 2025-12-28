@@ -6,56 +6,15 @@ import './user-image.js';
 const MAX_SYMBOLS = 20;
 const MAX_HASHTAGS = 5;
 
-const form = document.querySelector('.img-upload__form');
-const formEdit = form.querySelector('.img-upload__overlay');
-const uploadInput = form.querySelector('.img-upload__input');
-const closeButton = form.querySelector('.img-upload__cancel');
-const btnFormSubmit = form.querySelector('.img-upload__submit');
-const inputHashtags = form.querySelector('.text__hashtags');
-const inputDescription = form.querySelector('.text__description');
+const formElement = document.querySelector('.img-upload__form');
+const formEditElement = formElement.querySelector('.img-upload__overlay');
+const uploadInputElement = formElement.querySelector('.img-upload__input');
+const closeButtonElement = formElement.querySelector('.img-upload__cancel');
+const btnFormSubmitElement = formElement.querySelector('.img-upload__submit');
+const inputHashtagsElement = formElement.querySelector('.text__hashtags');
+const inputDescriptionElement = formElement.querySelector('.text__description');
 
-const closeFormEdit = (event) => {
-  if (isEscape(event)){
-    closeEditor();
-  }
-};
-
-const openEditor = () => {
-  formEdit.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-
-  uploadInput.removeEventListener('change', openEditor);
-
-  closeButton.addEventListener('click', closeEditor);
-  document.addEventListener('keydown', closeFormEdit);
-
-  resetScale();
-  addFilter();
-
-  btnFormSubmit.disabled = false;
-};
-
-function closeEditor (){
-  formEdit.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  form.reset();
-
-  closeButton.removeEventListener('click', closeEditor);
-  document.removeEventListener('keydown', closeFormEdit);
-
-  uploadInput.addEventListener('change', openEditor);
-
-  deleteFilter();
-}
-
-uploadInput.addEventListener('change', openEditor);
-
-
-let errorMessage = '';
-
-const error = () => errorMessage;
-
-const pristine = new Pristine(form, {
+const pristine = new Pristine(formElement, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'img-upload__field-wrapper--invalid',
   errorTextParent: 'img-upload__field-wrapper',
@@ -63,8 +22,51 @@ const pristine = new Pristine(form, {
   errorTextClass: 'img-upload__error'
 });
 
+const closeFormEdit = (event) => {
+  if (isEscape(event)){
+    closeForm();
+  }
+};
+
+const openForm = () => {
+  formEditElement.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+
+  uploadInputElement.removeEventListener('change', openForm);
+
+  closeButtonElement.addEventListener('click', closeForm);
+  document.addEventListener('keydown', closeFormEdit);
+
+  resetScale();
+  addFilter();
+
+  btnFormSubmitElement.disabled = false;
+};
+
+function closeForm (){
+  formEditElement.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+
+  formElement.reset();
+  pristine.reset();
+
+  closeButtonElement.removeEventListener('click', closeForm);
+  document.removeEventListener('keydown', closeFormEdit);
+
+  uploadInputElement.addEventListener('change', openForm);
+
+  deleteFilter();
+}
+
+uploadInputElement.addEventListener('change', openForm);
+
+
+let errorMessage = '';
+
+const error = () => errorMessage;
+
 const onHashtagInput = () => {
-  btnFormSubmit.disabled = !pristine.validate();
+  btnFormSubmitElement.disabled = !pristine.validate();
 };
 
 const hashtagsHandler = (value) => {
@@ -115,11 +117,11 @@ const hashtagsHandler = (value) => {
   });
 };
 
-pristine.addValidator(inputHashtags, hashtagsHandler, error);
+pristine.addValidator(inputHashtagsElement, hashtagsHandler, error);
 
-inputHashtags.addEventListener('input', onHashtagInput);
+inputHashtagsElement.addEventListener('input', onHashtagInput);
 
-inputHashtags.addEventListener('keydown', (evt) => {
+inputHashtagsElement.addEventListener('keydown', (evt) => {
   if (evt.key === 'Escape') {
     evt.stopPropagation();
   }
@@ -129,14 +131,14 @@ inputHashtags.addEventListener('keydown', (evt) => {
 const validateDescription = (value) =>  value.length <= 140;
 
 pristine.addValidator(
-  inputDescription,
+  inputDescriptionElement,
   validateDescription,
   'Комментарий не должен превышать 140 символов'
 );
 
-inputDescription.addEventListener('input', onHashtagInput);
+inputDescriptionElement.addEventListener('input', onHashtagInput);
 
-inputDescription.addEventListener('keydown', (evt) => {
+inputDescriptionElement.addEventListener('keydown', (evt) => {
   if (evt.key === 'Escape') {
     evt.stopPropagation();
   }
@@ -154,6 +156,9 @@ const showMessage = (message) => {
     closeMessageButton.removeEventListener('click', closeMessage);
     document.removeEventListener('keydown', escapeMessage);
     document.removeEventListener('click', closeMessageByClick);
+
+    document.addEventListener('keydown', closeFormEdit);
+    btnFormSubmitElement.disabled = false;
   };
 
   function escapeMessage (event)  {
@@ -173,7 +178,12 @@ const showMessage = (message) => {
   document.addEventListener('click', closeMessageByClick);
 };
 
-form.addEventListener('submit', (evt) => {
+const onError = () => {
+  showMessage('error');
+  document.removeEventListener('keydown', closeFormEdit);
+};
+
+formElement.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
   if (!pristine.validate()){
@@ -181,13 +191,13 @@ form.addEventListener('submit', (evt) => {
   }
 
   const formData = new FormData(evt.target);
-  btnFormSubmit.disabled = true;
+  btnFormSubmitElement.disabled = true;
 
   uploadData(() => {
-    closeEditor();
+    closeForm();
     showMessage('success');
   }, () => {
-    closeEditor();
-    showMessage('error');
+    onError();
   }, 'POST', formData);
 });
+

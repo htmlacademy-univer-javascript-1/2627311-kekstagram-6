@@ -1,7 +1,7 @@
 import { loadData } from './fetch.js';
 import {renderPictures} from './render-pictures.js';
 import { initSort } from './filter.js';
-import { onError } from './util.js';
+import { showMessageError } from './util.js';
 import './form.js';
 
 let photos = [];
@@ -13,4 +13,4 @@ const onSuccess = (data) => {
   initSort(photos);
 };
 
-loadData(onSuccess, onError);
+loadData(onSuccess, showMessageError);

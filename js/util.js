@@ -21,25 +21,23 @@ const shuffleArray = (array) => {
   return result;
 };
 
-const onError = () => {
-  document.body.insertAdjacentHTML('beforeend', `
-    <div id="error-box" style="
-        position: fixed;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgb(236, 74, 74);
-        color: white;
-        padding: 100px 200px;
-        border-radius: 8px;
-        font-family: Arial, sans-serif;
-        font-size: 45px;
-        font-weight: bold;
-        z-index: 9999;
-    ">
-        Ошибка загрузки
-    </div>
-  `);
+const showMessageError = () => {
+  const messageContainer = document.createElement('div');
+  messageContainer.classList.add('data-error');
+  messageContainer.style.zIndex = '100';
+  messageContainer.style.position = 'fixed';
+  messageContainer.style.left = '50%';
+  messageContainer.style.top = '40%';
+  messageContainer.style.transform = 'translate(-50%, -50%)';
+  messageContainer.style.padding = '100px 200px';
+  messageContainer.style.fontSize = '45px';
+  messageContainer.style.background = 'rgb(236, 74, 74)';
+  messageContainer.style.color = 'white';
+  messageContainer.style.lineHeight = '1.5';
+  messageContainer.style.borderRadius = '8px';
+  messageContainer.textContent = 'Ошибка загрузки';
+
+  document.body.append(messageContainer);
 };
 
-export {isEscape, debounce, shuffleArray, onError};
+export {isEscape, debounce, shuffleArray, showMessageError};

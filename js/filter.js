@@ -4,8 +4,8 @@ import { removePictures, renderPictures } from './render-pictures.js';
 const COUNT_OF_FILTER = 10;
 const ACTIVE_CLASS = 'img-filters__button--active';
 
-const imgFilters = document.querySelector('.img-filters');
-const imgFiltersForm = imgFilters.querySelector('.img-filters__form');
+const imgFiltersElement = document.querySelector('.img-filters');
+const imgFiltersFormElement = imgFiltersElement.querySelector('.img-filters__form');
 
 const initSort = (photos) => {
   const availableFilters = {
@@ -26,7 +26,7 @@ const initSort = (photos) => {
 
   const onButtonClick = (evt) => {
     if (isButton(evt)){
-      const selectedButton = imgFilters.querySelector(`.${ACTIVE_CLASS}`);
+      const selectedButton = imgFiltersElement.querySelector(`.${ACTIVE_CLASS}`);
 
       if (selectedButton){
         selectedButton.classList.remove(ACTIVE_CLASS);
@@ -36,8 +36,8 @@ const initSort = (photos) => {
     }
   };
 
-  imgFiltersForm.addEventListener('click', onImgFiltersFormClick);
-  imgFiltersForm.addEventListener('click', onButtonClick);
+  imgFiltersFormElement.addEventListener('click', onImgFiltersFormClick);
+  imgFiltersFormElement.addEventListener('click', onButtonClick);
 };
 
 export {initSort};
