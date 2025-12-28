@@ -1,6 +1,8 @@
+const SERVER_URL = 'https://29.javascript.htmlacademy.pro/kekstagram';
+
 const Urls = {
-  GET: 'https://29.javascript.htmlacademy.pro/kekstagram/data',
-  POST: 'https://29.javascript.htmlacademy.pro/kekstagram'
+  GET: `${SERVER_URL}/data`,
+  POST: `${SERVER_URL}/`,
 };
 
 const sendRequest = (onSuccess, onError, method, body) => {
