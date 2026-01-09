@@ -2,14 +2,15 @@ const MIN_SCALE = 25;
 const MAX_SCALE = 100;
 const STEP_SCALE = 25;
 
-const imageElement = document.querySelector('.img-upload__preview').children[0];
-const effectsListElement = document.querySelector('.effects__list');
-const sliderEffectLevelElement = document.querySelector('.effect-level__slider');
-const effectValueElement = document.querySelector('.effect-level__value');
-const sliderElement = document.querySelector('.img-upload__effect-level');
-const btnScaleSmallerElement = document.querySelector('.scale__control--smaller');
-const btnScaleBiggerElement = document.querySelector('.scale__control--bigger');
-const scaleValueElement = document.querySelector('.scale__control--value');
+const formElement = document.querySelector('.img-upload__form');
+const imageElement = formElement.querySelector('.img-upload__preview').children[0];
+const effectsListElement = formElement.querySelector('.effects__list');
+const sliderEffectLevelElement = formElement.querySelector('.effect-level__slider');
+const effectValueElement = formElement.querySelector('.effect-level__value');
+const sliderElement = formElement.querySelector('.img-upload__effect-level');
+const btnScaleSmallerElement = formElement.querySelector('.scale__control--smaller');
+const btnScaleBiggerElement = formElement.querySelector('.scale__control--bigger');
+const scaleValueElement = formElement.querySelector('.scale__control--value');
 
 const effects = {
   none: {
@@ -38,7 +39,7 @@ const effects = {
   }
 };
 
-const oneffectsListChange = (event) => {
+const onEffectsListChange = (event) => {
   const currentEffect = event.target.value;
 
   const effect = effects[currentEffect];
@@ -66,7 +67,7 @@ const addFilter = () => {
   sliderElement.classList.add('hidden');
 
   sliderEffectLevelElement.noUiSlider.on('update', () => {
-    const currentEffect = document.querySelector('.effects__radio:checked').value;
+    const currentEffect = effectsListElement.querySelector('.effects__radio:checked').value;
 
     if (currentEffect === 'none') {return true;}
 
@@ -77,15 +78,15 @@ const addFilter = () => {
     imageElement.style.filter = effect.getValue(value);
   });
 
-  effectsListElement.addEventListener('change', oneffectsListChange);
+  effectsListElement.addEventListener('change', onEffectsListChange);
 };
 
 const deleteFilter = () => {
-  effectsListElement.removeEventListener('change', oneffectsListChange);
+  effectsListElement.removeEventListener('change', onEffectsListChange);
   sliderEffectLevelElement.noUiSlider.destroy();
 };
 
-let currentScale = 100;
+let currentScale = MAX_SCALE;
 
 const changeScale = (value) => {
   if (currentScale + value < MIN_SCALE || currentScale + value > MAX_SCALE){
@@ -93,12 +94,12 @@ const changeScale = (value) => {
   } else {
     currentScale += value;
     scaleValueElement.value = `${currentScale}%`;
-    imageElement.style.transform = `scale(${currentScale / 100})`;
+    imageElement.style.transform = `scale(${currentScale / MAX_SCALE})`;
   }
 };
 
 const resetScale = () => {
-  currentScale = 100;
+  currentScale = MAX_SCALE;
   imageElement.style.transform = 'scale(1)';
 };
 

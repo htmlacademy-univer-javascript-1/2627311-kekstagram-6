@@ -9,7 +9,7 @@ const commentsLoaderElement = bigPictureElement.querySelector('.comments-loader'
 const closeButtonElement = bigPictureElement.querySelector('.big-picture__cancel');
 
 let currentShow = 0;
-let onCommentsLoad = null;
+let onCommentsLoaderClick = null;
 
 const renderComment = (comment) => {
   const {avatar, name, message} = comment;
@@ -49,21 +49,21 @@ const renderListComments = (comments) => {
   commentsCountElement.innerHTML =`<span class="social__comment-shown-count">${currentShow}</span> из <span class="social__comment-total-count comments-count">${comments.length}</span> комментариев`;
 };
 
-const closeBigPictureKeydown = (event) => {
+const onDocumentKeydown = (event) => {
   if (isEscape(event)){
-    closeBigPicture();
+    onCloseButtonClick();
   }
 };
 
-function closeBigPicture() {
+function onCloseButtonClick() {
   bigPictureElement.classList.add('hidden');
   commentsCountElement.classList.remove('hidden');
   commentsLoaderElement.classList.remove('hidden');
   document.body.classList.remove('modal-open');
 
-  document.removeEventListener('keydown', closeBigPictureKeydown);
-  commentsLoaderElement.removeEventListener('click', onCommentsLoad);
-  closeButtonElement.removeEventListener('click', closeBigPicture);
+  document.removeEventListener('keydown', onDocumentKeydown);
+  commentsLoaderElement.removeEventListener('click', onCommentsLoaderClick);
+  closeButtonElement.removeEventListener('click', onCloseButtonClick);
 
   currentShow = 0;
 }
@@ -83,13 +83,13 @@ const showBigPicture = (arr) => {
 
   renderListComments(comments);
 
-  onCommentsLoad = () => {
+  onCommentsLoaderClick = () => {
     renderListComments(comments);
   };
-  commentsLoaderElement.addEventListener('click', onCommentsLoad);
+  commentsLoaderElement.addEventListener('click', onCommentsLoaderClick);
 
-  document.addEventListener('keydown', closeBigPictureKeydown);
-  closeButtonElement.addEventListener('click', closeBigPicture);
+  document.addEventListener('keydown', onDocumentKeydown);
+  closeButtonElement.addEventListener('click', onCloseButtonClick);
 };
 
 export {showBigPicture};
